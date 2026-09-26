@@ -40,7 +40,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative flex min-h-svh overflow-hidden bg-ink">
+    <section className="relative flex h-[100dvh] max-h-[100dvh] min-h-[100dvh] overflow-hidden bg-ink supports-[height:100svh]:h-svh supports-[height:100svh]:max-h-svh supports-[height:100svh]:min-h-svh">
       <div className="absolute inset-0 z-0">
         <video
           ref={videoRef}
@@ -56,16 +56,16 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
       </div>
 
-      <div className="brand-container relative z-10 flex w-full flex-col items-center justify-end pb-14 pt-28 text-center sm:pb-20 sm:pt-[28vh] lg:pb-24 lg:pt-[32vh]">
+      <div className="brand-container relative z-10 flex h-full w-full flex-col items-center justify-end pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[calc(4.5rem+env(safe-area-inset-top))] text-center sm:pb-20 sm:pt-28 lg:pb-24 lg:pt-32">
         <h1 className="omranco-display max-w-3xl text-primary drop-shadow-sm">
           {t("heroTitle")}
         </h1>
 
-        <p className="mt-4 max-w-md text-sm font-bold text-white/90 sm:text-base">
+        <p className="mt-3 max-w-md text-sm font-bold text-white/90 sm:mt-4 sm:text-base">
           {t("heroSub")}
         </p>
 
-        <div className="mt-6 flex w-full max-w-sm flex-col gap-3 sm:mt-8 sm:max-w-md sm:flex-row sm:justify-center">
+        <div className="mt-5 flex w-full max-w-sm flex-col gap-3 pb-2 sm:mt-8 sm:max-w-md sm:flex-row sm:justify-center sm:pb-0">
           <Button asChild variant="hero" className="h-12 flex-1 text-base sm:flex-none sm:px-10">
             <Link to="/menu">{t("orderNow")}</Link>
           </Button>

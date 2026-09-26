@@ -1,24 +1,22 @@
-# Kind Actions Forge
+# OMRANCO BURGER
 
-do
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/d14d80d4-5270-466f-ba31-6b7822fbf179).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+موقع عمرانكو برجر — المنصورة.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+تحتاج Node.js و npm:
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
+git clone https://github.com/elrefaeey/omran.git
+cd omran
 npm i
 npm run dev
 ```
+
+افتح `http://localhost:8080`.
+
+## Scripts
+
+- `npm run dev` — سيرفر التطوير
+- `npm run build` — بناء للإنتاج
+- `npm run preview` — معاينة البناء
