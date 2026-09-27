@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { CartDrawer } from "@/components/cart/CartDrawer";
+import { DeferredCartDrawer } from "@/components/cart/DeferredCartDrawer";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { StickyCartBar } from "@/components/layout/StickyCartBar";
@@ -18,7 +18,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <div className="hidden lg:block">
         <StickyCartBar />
       </div>
-      <CartDrawer />
+      <DeferredCartDrawer />
     </div>
   );
 }

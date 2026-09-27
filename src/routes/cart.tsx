@@ -30,13 +30,17 @@ function CartPage() {
         </div>
 
         {lines.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 border-2 border-black bg-white py-20 text-center hard-shadow">
-            <ShoppingBag className="size-10 text-muted-foreground" />
-            <p className="text-lg font-extrabold">{t("emptyCart")}</p>
-            <p className="text-sm text-muted-foreground">{t("emptyCartSub")}</p>
-            <Button asChild variant="hero" className="mt-2">
-              <Link to="/menu">{t("emptyCartCta")}</Link>
-            </Button>
+          <div className="mx-auto w-full max-w-md border-2 border-black bg-white hard-shadow">
+            <div className="flex flex-col items-center gap-3 bg-white px-6 py-12 text-center">
+              <span className="grid size-16 place-items-center border-2 border-black bg-amber hard-shadow-sm">
+                <ShoppingBag className="size-8 text-ink" />
+              </span>
+              <p className="omranco-display text-primary !text-[clamp(1.6rem,7vw,2.1rem)]">{t("emptyCart")}</p>
+              <p className="text-sm text-muted-foreground">{t("emptyCartSub")}</p>
+              <Button asChild variant="hero" className="mt-1">
+                <Link to="/menu">{t("emptyCartCta")}</Link>
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">

@@ -1,22 +1,58 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { z } from "zod";
 import { ProductCard } from "@/components/menu/ProductCard";
-import { ProductModal } from "@/components/menu/ProductModal";
+import { DeferredProductModal } from "@/components/menu/DeferredProductModal";
 import { Input } from "@/components/ui/input";
 import { useLang } from "@/lib/i18n";
 import { categories, products, type CategoryId, type Product } from "@/lib/menu-data";
 
-const searchSchema = z.object({
-  category: z
-    .enum(["beef", "chicken", "appetizers", "new", "mix", "combo", "extras", "kids"])
-    .optional(),
-  q: z.string().optional(),
-});
+/** Exact allowlist from the previous Zod enum (same as CategoryId). */
+const MENU_SEARCH_CATEGORIES = [
+  "beef",
+  "chicken",
+  "appetizers",
+  "new",
+  "mix",
+  "combo",
+  "extras",
+  "kids",
+] as const satisfies ReadonlyArray<CategoryId>;
+
+export type MenuSearch = {
+  category?: CategoryId;
+  q?: string;
+};
+
+/**
+ * Manual replacement for `z.object({ category: z.enum(...).optional(), q: z.string().optional() })`.
+ * Same rules: optional fields, strip unknowns, throw on invalid present values (Zod `.parse`).
+ */
+function validateMenuSearch(search: Record<string, unknown>): MenuSearch {
+  const result: MenuSearch = {};
+
+  if (search.category !== undefined) {
+    if (
+      typeof search.category !== "string" ||
+      !(MENU_SEARCH_CATEGORIES as readonly string[]).includes(search.category)
+    ) {
+      throw new Error("Invalid menu search category");
+    }
+    result.category = search.category;
+  }
+
+  if (search.q !== undefined) {
+    if (typeof search.q !== "string") {
+      throw new Error("Invalid menu search q");
+    }
+    result.q = search.q;
+  }
+
+  return result;
+}
 
 export const Route = createFileRoute("/menu")({
-  validateSearch: searchSchema,
+  validateSearch: validateMenuSearch,
   head: () => ({
     meta: [
       { title: "المنيو | OMRANCO BURGER" },
@@ -67,11 +103,10 @@ function MenuPage() {
             <Search className="pointer-events-none absolute top-1/2 start-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
-              onChange={(e) => {
-                const v = e.target.value;
-                setQuery(v);
+              onChange={(e) => setQuery(e.target.value)}
+              onBlur={() => {
                 navigate({
-                  search: (prev) => ({ ...prev, q: v || undefined }),
+                  search: (prev) => ({ ...prev, q: query.trim() || undefined }),
                   replace: true,
                 });
               }}
@@ -81,7 +116,7 @@ function MenuPage() {
             />
           </div>
 
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar sm:-mx-5 sm:px-5">
             <button
               type="button"
               onClick={() => setCategory(undefined)}
@@ -117,7 +152,7 @@ function MenuPage() {
         )}
       </div>
 
-      <ProductModal
+      <DeferredProductModal
         product={active}
         open={!!active}
         onOpenChange={(o) => !o && setActive(null)}

@@ -10,7 +10,6 @@ export function OffersPromoBanner() {
     <section className="red-grid relative py-12 sm:py-16">
       <div className="brand-container relative flex flex-col items-center text-center">
         <OsWindow
-          title="OFFERS.APP"
           className="w-full max-w-2xl !overflow-visible"
           bodyClassName="relative !overflow-visible px-4 pb-14 pt-12 sm:px-10 sm:pb-10 sm:pt-10"
         >

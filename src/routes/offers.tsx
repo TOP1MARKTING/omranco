@@ -14,7 +14,7 @@ export const Route = createFileRoute("/offers")({
 });
 
 function OffersPage() {
-  const { t, pick } = useLang();
+  const { t, pick, money } = useLang();
 
   return (
     <div className="red-grid min-h-[70vh] py-8 sm:py-10">
@@ -47,7 +47,10 @@ function OffersPage() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   {pick(offer.descAr, offer.descEn)}
                 </p>
-                <Button asChild variant="hero" className="mt-5 w-full">
+                <p className="mt-4 flex w-full items-center justify-center border-2 border-black bg-amber px-4 py-3 text-lg font-extrabold text-ink hard-shadow">
+                  {money(offer.price)}
+                </p>
+                <Button asChild variant="hero" className="mt-3 w-full">
                   <Link to="/menu">{t("orderNow")}</Link>
                 </Button>
               </div>

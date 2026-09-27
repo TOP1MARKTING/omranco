@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -10,7 +9,7 @@ import {
 import type { ReactNode } from "react";
 
 import { SiteLayout } from "@/components/layout/SiteLayout";
-import { Toaster } from "@/components/ui/sonner";
+import { DeferredToaster } from "@/components/ui/DeferredToaster";
 import { CartProvider } from "@/lib/cart";
 import { LangProvider } from "@/lib/i18n";
 import appCss from "../styles.css?url";
@@ -68,7 +67,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<Record<string, never>>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -102,8 +101,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
+        // Only families/weights used in CSS: Bebas (brand), Inter (LTR UI), Noto Kufi (headlines), Tajawal (body).
+        // display=swap keeps text visible while faces load (FCP-friendly; slight CLS tradeoff accepted).
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@700;800;900&family=Tajawal:wght@400;500;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=Noto+Kufi+Arabic:wght@700;800;900&family=Tajawal:wght@400;500;700;800&display=swap",
       },
     ],
   }),
@@ -128,18 +129,14 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <LangProvider>
-        <CartProvider>
-          <SiteLayout>
-            <Outlet />
-          </SiteLayout>
-          <Toaster position="top-center" richColors closeButton />
-        </CartProvider>
-      </LangProvider>
-    </QueryClientProvider>
+    <LangProvider>
+      <CartProvider>
+        <SiteLayout>
+          <Outlet />
+        </SiteLayout>
+        <DeferredToaster />
+      </CartProvider>
+    </LangProvider>
   );
 }

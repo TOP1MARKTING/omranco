@@ -24,7 +24,7 @@ const dict = {
   orderNow: { ar: "اطلب الآن", en: "Order now" },
   viewMenu: { ar: "شوف المنيو", en: "View menu" },
   cart: { ar: "السلة", en: "Cart" },
-  heroTitle: { ar: "جاهز تجرب عروض عمرانكو؟", en: "Ready to try OMRANCO offers?" },
+  heroTitle: { ar: "جاهز تجرب\nعروض عمرانكو؟", en: "Ready to try\nOMRANCO offers?" },
   heroSub: {
     ar: "اختار أكلك واطلبه دلوقتي",
     en: "Pick your food and order now",
@@ -72,6 +72,7 @@ const dict = {
   confirmOrder: { ar: "تأكيد الطلب", en: "Confirm order" },
   required: { ar: "مطلوب", en: "Required" },
   cartPage: { ar: "سلة الطلبات", en: "Your cart" },
+  addMoreFood: { ar: "زود أكل يا عمري", en: "Add more food" },
   continueShopping: { ar: "كمّل تسوق", en: "Continue shopping" },
   orderSuccessTitle: { ar: "طلبك وصل لعمرانكو ❤️", en: "Your order reached OMRANCO ❤️" },
   orderSuccessSub: { ar: "هنبدأ تجهيز طلبك دلوقتي.", en: "We'll start preparing your order now." },

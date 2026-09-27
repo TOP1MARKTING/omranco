@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ProductCard } from "@/components/menu/ProductCard";
-import { ProductModal } from "@/components/menu/ProductModal";
+import { DeferredProductModal } from "@/components/menu/DeferredProductModal";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 import { products, type Product } from "@/lib/menu-data";
@@ -36,7 +36,11 @@ export function PopularItemsSection() {
         </div>
       </div>
 
-      <ProductModal product={active} open={!!active} onOpenChange={(o) => !o && setActive(null)} />
+      <DeferredProductModal
+        product={active}
+        open={!!active}
+        onOpenChange={(o) => !o && setActive(null)}
+      />
     </section>
   );
 }

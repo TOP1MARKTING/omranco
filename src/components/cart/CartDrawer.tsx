@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 export function CartLines() {
   const { lines, setQuantity, remove } = useCart();
@@ -104,7 +105,7 @@ export function CartSummary() {
 
 export function CartDrawer() {
   const { isOpen, setOpen, lines } = useCart();
-  const { t, lang } = useLang();
+  const { t, lang, dir, pick } = useLang();
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -112,30 +113,45 @@ export function CartDrawer() {
         side={lang === "ar" ? "left" : "right"}
         className="flex w-full flex-col gap-0 border-2 border-black p-0 sm:max-w-md [&>button]:hidden"
       >
-        <div className="flex items-center justify-between border-b-2 border-black bg-ink px-5 py-4 text-white">
-          <SheetTitle className="text-lg font-extrabold text-white">{t("cart")}</SheetTitle>
+        <div className="os-titlebar shrink-0" dir="ltr">
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="border border-white/40 bg-primary px-2 py-1 text-xs font-extrabold"
+            className="grid size-7 place-items-center border border-white/40 bg-primary text-white"
+            aria-label={pick("إغلاق", "Close")}
           >
-            ✕
+            <X className="size-4" strokeWidth={2.5} />
           </button>
+          <span className="size-3 border border-white/30 bg-amber" />
+          <span className="size-3 border border-white/30 bg-white/90" />
+          <span className="ms-2 font-brand text-[10px] tracking-[0.16em] text-white/75">CART.EXE</span>
+          <SheetTitle className={cn("text-sm font-extrabold text-white", dir === "rtl" && "ms-auto")}>
+            {t("cart")}
+          </SheetTitle>
         </div>
 
         {lines.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-white p-8 text-center">
-            <ShoppingBag className="size-10 text-muted-foreground" />
-            <p className="text-lg font-extrabold">{t("emptyCart")}</p>
-            <p className="text-sm text-muted-foreground">{t("emptyCartSub")}</p>
-            <Button asChild variant="hero" onClick={() => setOpen(false)}>
-              <Link to="/menu">{t("viewMenu")}</Link>
-            </Button>
+          <div className="flex flex-1 flex-col items-center justify-center bg-white p-6">
+            <div className="w-full max-w-sm border-2 border-black bg-white hard-shadow">
+              <div className="flex flex-col items-center gap-3 bg-white px-6 py-8 text-center">
+                <span className="grid size-16 place-items-center border-2 border-black bg-amber hard-shadow-sm">
+                  <ShoppingBag className="size-8 text-ink" />
+                </span>
+                <p className="omranco-display text-primary !text-[clamp(1.6rem,7vw,2.1rem)]">{t("emptyCart")}</p>
+                <p className="text-sm text-muted-foreground">{t("emptyCartSub")}</p>
+                <Button asChild variant="hero" className="mt-1" onClick={() => setOpen(false)}>
+                  <Link to="/menu">{t("viewMenu")}</Link>
+                </Button>
+              </div>
+            </div>
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto bg-white p-4">
+            <div className="flex flex-1 flex-col overflow-y-auto bg-white p-4">
               <CartLines />
+              <p className="omranco-display mt-auto py-8 text-center text-primary !text-[clamp(1.35rem,6vw,1.85rem)]">
+                بالهنا يا عمري
+              </p>
             </div>
             <div className="space-y-3 border-t-2 border-black bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
               <CartSummary />
@@ -143,7 +159,7 @@ export function CartDrawer() {
                 <Link to="/checkout">{t("checkout")}</Link>
               </Button>
               <Button asChild variant="outline" className="w-full" onClick={() => setOpen(false)}>
-                <Link to="/cart">{t("cartPage")}</Link>
+                <Link to="/menu">{t("addMoreFood")}</Link>
               </Button>
             </div>
           </>

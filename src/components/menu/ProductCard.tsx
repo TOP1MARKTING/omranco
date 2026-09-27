@@ -1,5 +1,4 @@
 import { Minus, Plus } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
@@ -24,17 +23,14 @@ export function ProductCard({
       return;
     }
     add(product, 1, []);
-    toast.success(t("addedToCart"), { description: pick(product.nameAr, product.nameEn) });
   };
 
   return (
-    <article className="flex h-full flex-col overflow-hidden border-2 border-black bg-white hard-shadow">
-      <button
-        type="button"
-        onClick={() => onOpen(product)}
-        className="relative block w-full border-b-2 border-black"
-        aria-label={pick(product.nameAr, product.nameEn)}
-      >
+    <article
+      className="flex h-full cursor-pointer flex-col overflow-hidden border-2 border-black bg-white hard-shadow"
+      onClick={() => onOpen(product)}
+    >
+      <div className="relative block w-full border-b-2 border-black">
         <img
           src={product.image}
           alt={pick(product.nameAr, product.nameEn)}
@@ -50,7 +46,7 @@ export function ProductCard({
         )}
         {product.popular && !product.oldPrice && (
           <span className="sticker absolute top-3 start-3 z-10 bg-primary text-white">
-            {pick("هيت", "HOT")}
+            {pick("حار", "HOT")}
           </span>
         )}
         {!product.available && (
@@ -58,7 +54,7 @@ export function ProductCard({
             {t("soldOut")}
           </div>
         )}
-      </button>
+      </div>
 
       <div className="flex flex-1 flex-col gap-2 p-3">
         <h3 className="line-clamp-2 text-sm font-extrabold leading-snug">
@@ -87,7 +83,10 @@ export function ProductCard({
                 variant="ghost"
                 className="size-9 rounded-none"
                 aria-label="-"
-                onClick={() => setQuantity(simpleLine.lineId, simpleLine.quantity - 1)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQuantity(simpleLine.lineId, simpleLine.quantity - 1);
+                }}
               >
                 <Minus />
               </Button>
@@ -97,7 +96,10 @@ export function ProductCard({
                 variant="ghost"
                 className="size-9 rounded-none"
                 aria-label="+"
-                onClick={() => setQuantity(simpleLine.lineId, simpleLine.quantity + 1)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQuantity(simpleLine.lineId, simpleLine.quantity + 1);
+                }}
               >
                 <Plus />
               </Button>
@@ -107,7 +109,10 @@ export function ProductCard({
               size="sm"
               variant="hero"
               disabled={!product.available}
-              onClick={handleAdd}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAdd();
+              }}
               className="h-10 w-full text-xs sm:text-sm"
             >
               <Plus className="size-3.5" />

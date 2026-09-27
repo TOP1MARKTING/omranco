@@ -1,12 +1,9 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { categories } from "@/lib/menu-data";
 import { useLang } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
 
 export function QuickOrderSection() {
   const { t, pick } = useLang();
-  const [active, setActive] = useState(categories[0]?.id ?? "");
 
   return (
     <section className="red-grid py-10 sm:py-14">
@@ -21,30 +18,13 @@ export function QuickOrderSection() {
           <span className="sticker bg-amber">{pick("اختار بسرعة", "PICK FAST")}</span>
         </div>
 
-        <div className="mb-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              data-active={active === cat.id}
-              className="cat-pill shrink-0"
-              onClick={() => setActive(cat.id)}
-            >
-              {pick(cat.nameAr, cat.nameEn)}
-            </button>
-          ))}
-        </div>
-
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8 sm:gap-4">
           {categories.map((cat) => (
             <Link
               key={cat.id}
               to="/menu"
               search={{ category: cat.id }}
-              className={cn(
-                "os-window group block transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5",
-                active === cat.id && "ring-2 ring-amber",
-              )}
+              className="os-window group block transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
             >
               <div className="os-titlebar !min-h-0 !gap-1 !py-1">
                 <span className="size-2 bg-primary" />

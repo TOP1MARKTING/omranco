@@ -21,7 +21,7 @@ export function OsWindow({
   return (
     <div
       className={cn(
-        glass ? "os-window-glass" : "os-window",
+        glass ? "os-window border-white/45 bg-white/10 shadow-[4px_4px_0_rgb(0_0_0_/_0.55)] backdrop-blur-2xl" : "os-window",
         frameless && "border-0 shadow-none",
         className,
       )}

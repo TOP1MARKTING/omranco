@@ -1,6 +1,9 @@
 /**
  * OMRANCO BURGER real menu — sourced from the restaurant printed menu.
  * Replace later with API/Firebase; keep these shapes as the UI contract.
+ *
+ * Types/constants live in menu-types / menu-constants so CartProvider does not
+ * pull this module (and its product images) into the initial client chunk.
  */
 
 import burgerImg from "@/assets/item-burger.jpg";
@@ -11,76 +14,18 @@ import friesImg from "@/assets/item-fries.jpg";
 import drinkImg from "@/assets/item-drink.jpg";
 import sticksBurgerImg from "@/assets/sticks-burger.png";
 
-export type CategoryId =
-  | "beef"
-  | "chicken"
-  | "appetizers"
-  | "new"
-  | "mix"
-  | "combo"
-  | "extras"
-  | "kids";
+export type {
+  Branch,
+  Category,
+  CategoryId,
+  Offer,
+  OptionChoice,
+  OptionGroup,
+  Product,
+} from "@/lib/menu-types";
+import type { Branch, Category, Offer, Product } from "@/lib/menu-types";
 
-export interface Category {
-  id: CategoryId;
-  nameAr: string;
-  nameEn: string;
-  image: string;
-}
-
-export interface OptionChoice {
-  id: string;
-  nameAr: string;
-  nameEn: string;
-  price: number;
-}
-
-export interface OptionGroup {
-  id: string;
-  nameAr: string;
-  nameEn: string;
-  type: "single" | "multi";
-  required?: boolean;
-  choices: OptionChoice[];
-}
-
-export interface Product {
-  id: string;
-  categoryId: CategoryId;
-  nameAr: string;
-  nameEn: string;
-  descAr: string;
-  descEn: string;
-  price: number;
-  oldPrice?: number;
-  image: string;
-  available: boolean;
-  popular?: boolean;
-  optionGroups?: OptionGroup[];
-}
-
-export interface Offer {
-  id: string;
-  titleAr: string;
-  titleEn: string;
-  descAr: string;
-  descEn: string;
-  badgeAr: string;
-  badgeEn: string;
-  image: string;
-}
-
-export interface Branch {
-  id: string;
-  nameAr: string;
-  nameEn: string;
-  addressAr: string;
-  addressEn: string;
-  phone: string;
-  mapUrl: string;
-}
-
-export const CURRENCY = { ar: "جنيه", en: "EGP" };
+export { CURRENCY, DELIVERY_FEE, deliveryZones } from "@/lib/menu-constants";
 
 export const categories: Category[] = [
   { id: "beef", nameAr: "برجر لحم", nameEn: "Beef Burger", image: burgerImg },
@@ -131,40 +76,46 @@ const sauceExtras: OptionGroup = {
 };
 
 export const products: Product[] = [
-  // ─── BEEF BURGER ───────────────────────────────────────────────
+  // ─── BEEF BURGER (printed BEEF menu) ───────────────────────────
   {
     id: "beef-ya-omry",
     categoryId: "beef",
     nameAr: "يا عمري برجر",
-    nameEn: "Ya Omry Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + صوص كريمي + رانش + مشروم فريش + بصل مكرمل + خيار مخلل.",
-    descEn: "Kaiser bun, 150g baladi beef, cream sauce, ranch, fresh mushrooms, caramelized onions, pickles.",
-    price: 165,
+    nameEn: "Ya Omri Burger",
+    descAr:
+      "عيش كايزر + ١٥٠ جرام من اللحم البلدي الصافي + الجبنة الكريمي + صوص الرانش + المشروم الطازج + البصل المكرمل + الخيار المخلل.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, cream cheese, ranch sauce, fresh mushrooms, caramelized onions, and pickles.",
+    price: 155,
     image: burgerImg,
     available: true,
     popular: true,
-    optionGroups: [beefSize(165, 240), sauceExtras],
+    optionGroups: [beefSize(155, 230), sauceExtras],
   },
   {
     id: "beef-omranco",
     categoryId: "beef",
     nameAr: "عمرانكو برجر",
     nameEn: "Omranco Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + صوص شيدر + صوص تكساس + خس + بصل مكرمل + خيار مخلل.",
-    descEn: "Kaiser bun, 150g baladi beef, cheddar sauce, Texas sauce, lettuce, caramelized onions, pickles.",
-    price: 170,
+    descAr:
+      "عيش كايزر + ١٥٠ جرام من اللحم البلدي الصافي + صوص الشيدر + صوص التكساس + الخس + البصل المكرمل + الخيار المخلل.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, cheddar sauce, Texas sauce, lettuce, caramelized onions, and pickles.",
+    price: 160,
     image: burgerImg,
     available: true,
     popular: true,
-    optionGroups: [beefSize(170, 245), sauceExtras],
+    optionGroups: [beefSize(160, 235), sauceExtras],
   },
   {
     id: "beef-classic",
     categoryId: "beef",
     nameAr: "كلاسيك برجر",
     nameEn: "Classic Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + طماطم مشوية + بصل مشوي + خس + خيار مخلل + صوص ١٠٠٠ جزيرة + صوص شيدر.",
-    descEn: "Kaiser bun, 150g baladi beef, grilled tomatoes, grilled onions, lettuce, pickles, 1000 island, cheddar sauce.",
+    descAr:
+      "عيش كايزر + ١٥٠ جرام لحم بلدي صافي + الطماطم المشوية + البصل المشوي + الخس + الخيار المخلل + صوص الألف جزيرة + صوص الشيدر.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, grilled tomatoes, grilled onions, lettuce, pickles, Thousand Island sauce, and cheddar sauce.",
     price: 145,
     image: burgerImg,
     available: true,
@@ -175,58 +126,39 @@ export const products: Product[] = [
     id: "beef-ya-weily",
     categoryId: "beef",
     nameAr: "يا ويلي برجر",
-    nameEn: "Ya Weily Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + سويت شيلي + خس + صوص حار + هاليبينو + صوص شيدر + خيار مخلل.",
-    descEn: "Kaiser bun, 150g baladi beef, sweet chili, lettuce, hot sauce, jalapeño, cheddar sauce, pickles.",
-    price: 170,
+    nameEn: "Ya Weely Burger",
+    descAr:
+      "عيش كايزر + ١٥٠ جرام لحم بلدي صافي + الخس + الخيار المخلل + صوص السويت شيلي + الصوص الحار + قطع الهالبينو + صوص الشيدر.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, lettuce, pickles, sweet chili sauce, hot sauce, jalapeños, and cheddar sauce.",
+    price: 160,
     image: burgerImg,
     available: true,
-    optionGroups: [beefSize(170, 245), sauceExtras],
+    optionGroups: [beefSize(160, 235), sauceExtras],
   },
   {
     id: "beef-onion",
     categoryId: "beef",
-    nameAr: "أونيون بيف برجر",
-    nameEn: "Onion Beef Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + صوص شيدر + خس + باربيكيو + أونيون رينجز + خيار مخلل + مايونيز.",
-    descEn: "Kaiser bun, 150g baladi beef, cheddar sauce, lettuce, BBQ, onion rings, pickles, mayonnaise.",
-    price: 175,
+    nameAr: "أونيونبيف برجر",
+    nameEn: "Onionbeef Burger",
+    descAr:
+      "عيش كايزر + ١٥٠ جرام من اللحم البلدي الصافي + صوص الشيدر + صوص الباربيكيو + حلقات البصل المقلية + الخيار المخلل + الخس + المايونيز.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, cheddar sauce, BBQ sauce, fried onion rings, pickles, lettuce, and mayonnaise.",
+    price: 165,
     image: burgerImg,
     available: true,
-    optionGroups: [beefSize(175, 250), sauceExtras],
-  },
-  {
-    id: "beef-infinity",
-    categoryId: "beef",
-    nameAr: "إنفينيتي برجر",
-    nameEn: "Infinity Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + صوص شيدر + بيف بيكون + مشروم فريش + باربيكيو + خيار مخلل + خس + مايونيز.",
-    descEn: "Kaiser bun, 150g baladi beef, cheddar sauce, beef bacon, mushrooms, BBQ, pickles, lettuce, mayo.",
-    price: 190,
-    image: burgerImg,
-    available: true,
-    popular: true,
-    optionGroups: [beefSize(190, 265), sauceExtras],
-  },
-  {
-    id: "beef-hotdog",
-    categoryId: "beef",
-    nameAr: "هوت دوج برجر",
-    nameEn: "Hot Dog Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + صوص شيدر + هوت دوج + طماطم مشوية + بصل + كاتشب + خيار مخلل + خس + مايونيز.",
-    descEn: "Kaiser bun, 150g baladi beef, cheddar sauce, hot dog, grilled tomatoes, onions, ketchup, pickles, lettuce, mayo.",
-    price: 175,
-    image: burgerImg,
-    available: true,
-    optionGroups: [beefSize(175, 250), sauceExtras],
+    optionGroups: [beefSize(165, 240), sauceExtras],
   },
   {
     id: "beef-sticks",
     categoryId: "beef",
     nameAr: "ستيكس برجر",
     nameEn: "Sticks Burger",
-    descAr: "عيش كايزر + ١٥٠جم لحم بلدي + صوص شيدر + موتزاريلا ستيكس + رانش + خيار مخلل + خس + مايونيز.",
-    descEn: "Kaiser bun, 150g baladi beef, cheddar sauce, mozzarella sticks, ranch, pickles, lettuce, mayo.",
+    descAr:
+      "عيش كايزر + ١٥٠ جرام من اللحم البلدي الصافي + صوص الشيدر + اصابع الموتزاريلا المقلية + صوص الرانش + الخيار المخلل + الخس + المايونيز.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, cheddar sauce, fried mozzarella sticks, ranch sauce, pickles, lettuce, and mayonnaise.",
     price: 175,
     image: sticksBurgerImg,
     available: true,
@@ -234,63 +166,86 @@ export const products: Product[] = [
     optionGroups: [beefSize(175, 250), sauceExtras],
   },
   {
+    id: "beef-infinity",
+    categoryId: "beef",
+    nameAr: "انفينيتي برجر",
+    nameEn: "Infinity Burger",
+    descAr:
+      "عيش كايزر + ١٥٠ جرام من اللحم البلدي الصافي + صوص الشيدر + بيف بيكون + مشروم طازج + صوص الباربيكيو + الخيار المخلل + الخس + المايونيز.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, cheddar sauce, beef bacon, fresh mushrooms, BBQ sauce, pickles, lettuce, and mayonnaise.",
+    price: 170,
+    image: burgerImg,
+    available: true,
+    popular: true,
+    optionGroups: [beefSize(170, 245), sauceExtras],
+  },
+  {
+    id: "beef-hotdog",
+    categoryId: "beef",
+    nameAr: "هوت دوج برجر",
+    nameEn: "Hot Dog Burger",
+    descAr:
+      "عيش كايزر + ١٥٠ جرام من اللحم البلدي الصافي + صوص الشيدر + هوت دوج + طماطم مشوية + بصل + كاتشب + الخيار المخلل + الخس + المايونيز.",
+    descEn:
+      "Kaiser bun, 150g pure baladi beef, cheddar sauce, hot dog, grilled tomatoes, onions, ketchup, pickles, lettuce, and mayonnaise.",
+    price: 170,
+    image: burgerImg,
+    available: true,
+    optionGroups: [beefSize(170, 245), sauceExtras],
+  },
+  {
     id: "beef-texas-wrap",
     categoryId: "beef",
     nameAr: "تكساس بيف راب",
     nameEn: "Texas Beef Wrap",
-    descAr: "عيش تورتيلا + ٧٥جم لحم بلدي مفروم + موزاريلا + طماطم مشوية + بصل مشوي + خيار مخلل + خس.",
-    descEn: "Tortilla, 75g minced baladi beef, mozzarella, grilled tomatoes, grilled onions, pickles, lettuce.",
-    price: 115,
+    descAr:
+      "عيش تورتيلا + ٧٥ جرام من اللحم البلدي الصافي المفروم + جبن موتزاريلا + طماطم مشوية + بصل مشوي على الجريل + الخيار المخلل + الخس.",
+    descEn:
+      "Tortilla, 75g minced pure baladi beef, mozzarella cheese, grilled tomatoes, grilled onions, pickles, and lettuce.",
+    price: 110,
     image: sandwichImg,
     available: true,
-    optionGroups: [beefSize(115, 155)],
   },
   {
-    id: "beef-demi-glace-wrap",
+    id: "beef-texas-wrap-extra",
     categoryId: "beef",
-    nameAr: "ديمي جلاس راب",
-    nameEn: "Demi-Glace Wrap",
-    descAr: "عيش تورتيلا + ١٥٠جم برجر لحم بلدي + صوص ديمي جلاس بالمشروم + خس + طماطم + بصل + صوص شيدر + موزاريلا.",
-    descEn: "Tortilla, 150g baladi beef patty, mushroom demi-glace, lettuce, tomatoes, onions, cheddar sauce, mozzarella.",
-    price: 160,
+    nameAr: "تكساس بيف راب إكسترا حشو",
+    nameEn: "Texas Beef Wrap Extra Filling",
+    descAr:
+      "عيش تورتيلا + ١٥٠ جرام من اللحم البلدي الصافي المفروم + جبن موتزاريلا + طماطم مشوية + بصل مشوي على الجريل + الخيار المخلل + الخس.",
+    descEn:
+      "Tortilla, 150g minced pure baladi beef, mozzarella cheese, grilled tomatoes, grilled onions, pickles, and lettuce.",
+    price: 155,
     image: sandwichImg,
     available: true,
   },
-
-  // ─── CHICKEN BURGER ────────────────────────────────────────────
   {
-    id: "chk-ranch",
-    categoryId: "chicken",
-    nameAr: "تشيكن رانش",
-    nameEn: "Chicken Ranch",
-    descAr: "عيش كايزر + قطعتين صدور دجاج مقلي + صوص جبنة + رومي مدخن + رانش + خس + مايونيز.",
-    descEn: "Kaiser bun, two fried chicken breasts, cheese sauce, smoked turkey, ranch, lettuce, mayo.",
-    price: 160,
-    image: chickenImg,
+    id: "beef-ya-lahwy",
+    categoryId: "beef",
+    nameAr: "يا لهوي",
+    nameEn: "Ya Lahwy",
+    descAr:
+      "عيش تورتيلا + برجر مع صوص التكساس + بصل مكرمل + دجاج جريلد مع صوص الباربيكيو + دجاج مقلي مع صوص السويت شيلي + صوص الشيدر الملفوفة رول والمقلية بطبقة الكورن + صوص الألف جزيرة + الخيار المخلل + الخس.",
+    descEn:
+      "Tortilla with Texas-sauced burger, caramelized onions, BBQ grilled chicken, sweet-chili fried chicken, cheddar corn-coated fried roll, Thousand Island, pickles, and lettuce.",
+    price: 210,
+    image: sandwichImg,
     available: true,
     popular: true,
-    optionGroups: [sauceExtras],
   },
+
+  // ─── CHICKEN BURGER (printed CHICKENS menu) ────────────────────
   {
     id: "chk-coleslaw",
     categoryId: "chicken",
     nameAr: "كول سلو تشيكن",
     nameEn: "Coleslaw Chicken",
-    descAr: "عيش كايزر + قطعتين صدور دجاج مقلي بتتبيلتنا + صوص شيدر + كول سلو + خس + مايونيز.",
-    descEn: "Kaiser bun, two seasoned fried chicken breasts, cheddar sauce, coleslaw, lettuce, mayo.",
-    price: 165,
-    image: chickenImg,
-    available: true,
-    optionGroups: [sauceExtras],
-  },
-  {
-    id: "chk-chili-crunchy",
-    categoryId: "chicken",
-    nameAr: "تشيلي كرانشي",
-    nameEn: "Chili Crunchy",
-    descAr: "عيش باجيت + قطعتين صدور دجاج + خس + مايونيز + سويت شيلي + رانش حار + صوص فيكتوريا.",
-    descEn: "Baguette, two chicken breasts, lettuce, mayo, sweet chili, hot ranch, Victoria sauce.",
-    price: 165,
+    descAr:
+      "عيش كايزر + قطعتين صدور دجاج مقلي بتتبيلتنا الخاصة + صوص شيدر + كول سلو + خس + مايونيز.",
+    descEn:
+      "Kaiser bun, 2 fried chicken breast pieces with special seasoning, cheddar sauce, coleslaw, lettuce, and mayonnaise.",
+    price: 160,
     image: chickenImg,
     available: true,
     optionGroups: [sauceExtras],
@@ -298,39 +253,16 @@ export const products: Product[] = [
   {
     id: "chk-grilled-kaiser",
     categoryId: "chicken",
-    nameAr: "جريند تشيكن كايزر",
+    nameAr: "جريلد تشيكن كايزر",
     nameEn: "Grilled Chicken Kaiser",
-    descAr: "عيش كايزر + قطعتين صدور دجاج مشوي + صوص شيدر + بيف بيكون + مشروم + باربيكيو + خس + مايونيز.",
-    descEn: "Kaiser bun, two grilled chicken breasts, cheddar sauce, beef bacon, mushroom, BBQ, lettuce, mayo.",
-    price: 170,
+    descAr:
+      "عيش كايزر + قطعتين صدور دجاج مشوي بتتبيلتنا الخاصة + صوص شيدر + بيف بيكون + مشروم + باربيكيو + خس + مايونيز.",
+    descEn:
+      "Kaiser bun, 2 grilled chicken breast pieces with special seasoning, cheddar sauce, beef bacon, mushrooms, BBQ sauce, lettuce, and mayonnaise.",
+    price: 160,
     image: chickenImg,
     available: true,
     popular: true,
-    optionGroups: [sauceExtras],
-  },
-  {
-    id: "chk-classic",
-    categoryId: "chicken",
-    nameAr: "كلاسيك تشيكن برجر",
-    nameEn: "Classic Chicken Burger",
-    descAr: "عيش كايزر + صدر دجاج كرسبي + مايونيز + صوص شيدر + خيار مخلل + خس.",
-    descEn: "Kaiser bun, crispy chicken breast, mayo, cheddar sauce, pickles, lettuce.",
-    price: 140,
-    image: chickenImg,
-    available: true,
-    popular: true,
-    optionGroups: [sauceExtras],
-  },
-  {
-    id: "chk-cordon-kaiser",
-    categoryId: "chicken",
-    nameAr: "نيو كوردن بلو كايزر",
-    nameEn: "New Cordon Bleu Kaiser",
-    descAr: "عيش كايزر + دجاج محشي جبن + رومي مدخن + بيف بيكون + خس + مايونيز.",
-    descEn: "Kaiser bun, cheese-stuffed fried chicken, smoked turkey, beef bacon, lettuce, mayo.",
-    price: 170,
-    image: chickenImg,
-    available: true,
     optionGroups: [sauceExtras],
   },
   {
@@ -338,21 +270,25 @@ export const products: Product[] = [
     categoryId: "chicken",
     nameAr: "مكسيكان تشيكن جريلد",
     nameEn: "Mexican Chicken Grilled",
-    descAr: "عيش فينو + قطعتين دجاج جريلد + بصل مكرمل + هاليبينو + صوص شيدر + موزاريلا + مايونيز + خس.",
-    descEn: "Fino bread, two grilled chicken, caramelized onions, jalapeño, cheddar sauce, mozzarella, mayo, lettuce.",
-    price: 170,
+    descAr:
+      "عيش فينو + قطعتين دجاج جريلد + بصل مكرمل + هاليبينو + صوص شيدر + جبنة موزاريلا + مايونيز + خس.",
+    descEn:
+      "Fino bread, 2 grilled chicken pieces, caramelized onions, jalapeños, cheddar sauce, mozzarella cheese, mayonnaise, and lettuce.",
+    price: 160,
     image: chickenImg,
     available: true,
     optionGroups: [sauceExtras],
   },
   {
-    id: "chk-mexican-burger",
+    id: "chk-cheese-mushroom",
     categoryId: "chicken",
-    nameAr: "مكسيكان تشيكن برجر",
-    nameEn: "Mexican Chicken Burger",
-    descAr: "عيش كايزر + برجر دجاج + مايونيز + خيار مخلل + بصل مكرمل + هاليبينو + شيدر + موزاريلا.",
-    descEn: "Kaiser bun, chicken burger, mayo, pickles, caramelized onions, jalapeño, cheddar, mozzarella.",
-    price: 150,
+    nameAr: "جريلد تشيكن تشيز اند مشروم",
+    nameEn: "Grilled Chicken Cheese and Mushroom",
+    descAr:
+      "عيش فينو + قطعتين دجاج جريلد + بصل مكرمل + جبنة موزاريلا + مايونيز + خس + خيار مخلل + صوص شيدر.",
+    descEn:
+      "Fino bread, 2 grilled chicken pieces, caramelized onions, mozzarella cheese, mayonnaise, lettuce, pickles, and cheddar sauce.",
+    price: 165,
     image: chickenImg,
     available: true,
     optionGroups: [sauceExtras],
@@ -362,9 +298,11 @@ export const products: Product[] = [
     categoryId: "chicken",
     nameAr: "كانتري تشيكن راب",
     nameEn: "Country Chicken Wrap",
-    descAr: "عيش تورتيلا + قطعتين صدور دجاج مقلي + صوص تكساس + موزاريلا + خس + خيار مخلل + رانش + ذرة.",
-    descEn: "Tortilla, two fried chicken breasts, Texas sauce, mozzarella, lettuce, pickles, ranch, corn.",
-    price: 145,
+    descAr:
+      "عيش تورتيلا + قطعتين صدور دجاج مقلي + صوص تكساس + جبنة موزاريلا + خس + خيار مخلل + صوص ثاوزند آيلاند.",
+    descEn:
+      "Tortilla bread, 2 fried chicken breast pieces, Texas sauce, mozzarella cheese, lettuce, pickles, and Thousand Island sauce.",
+    price: 135,
     image: sandwichImg,
     available: true,
   },
@@ -373,20 +311,24 @@ export const products: Product[] = [
     categoryId: "chicken",
     nameAr: "تشيكن فاهيتا راب",
     nameEn: "Chicken Fajita Wrap",
-    descAr: "عيش تورتيلا + قطعتين صدور دجاج جريلد + بصل مكرمل + فلفل ألوان + مشروم + موزاريلا.",
-    descEn: "Tortilla, two grilled chicken breasts, caramelized onions, bell peppers, mushroom, mozzarella.",
-    price: 150,
+    descAr:
+      "عيش تورتيلا + قطعتين صدور دجاج جريلد + بصل مكرمل + فلفل ألوان + مشروم + جبنة موزاريلا.",
+    descEn:
+      "Tortilla bread, 2 grilled chicken breast pieces, caramelized onions, bell peppers, mushrooms, and mozzarella cheese.",
+    price: 140,
     image: sandwichImg,
     available: true,
   },
   {
-    id: "chk-cheese-mushroom",
+    id: "chk-cordon-kaiser",
     categoryId: "chicken",
-    nameAr: "جريند تشيكن تشيز أند مشروم",
-    nameEn: "Grilled Chicken Cheese & Mushroom",
-    descAr: "عيش فينو + قطعتين دجاج جريلد + بصل مكرمل + موزاريلا + مايونيز + خس + خيار مخلل + صوص شيدر.",
-    descEn: "Fino bread, two grilled chicken, caramelized onions, mozzarella, mayo, lettuce, pickles, cheddar sauce.",
-    price: 170,
+    nameAr: "نيو كوردينيو كايزر",
+    nameEn: "New Cordenio Kaiser",
+    descAr:
+      "عيش كايزر + قطعة دجاج مقلي محشي أجبان خاصة + رومي مدخن + بيف بيكون + خس + مايونيز.",
+    descEn:
+      "Kaiser bun, fried chicken piece stuffed with special cheeses, smoked turkey, beef bacon, lettuce, and mayonnaise.",
+    price: 160,
     image: chickenImg,
     available: true,
     optionGroups: [sauceExtras],
@@ -394,11 +336,13 @@ export const products: Product[] = [
   {
     id: "chk-cordon-amo",
     categoryId: "chicken",
-    nameAr: "كوردن بلو عمو وليد",
-    nameEn: "Cordon Bleu Amo Walid",
-    descAr: "عيش فينو + رول دجاج محشي جبن + بيكون + رومي مدخن + صوص شيدر + رانش + تكساس + خس + مايونيز.",
-    descEn: "Fino bread, cheese-stuffed chicken roll, bacon, smoked turkey, cheddar, ranch, Texas, lettuce, mayo.",
-    price: 175,
+    nameAr: "كوردينيو عمو وليد",
+    nameEn: "Cordenio Ammo Walid",
+    descAr:
+      "عيش فينو + رول دجاج مقلي محشي أجبان خاصة + بيكون + رومي مدخن + صوص شيدر + رانش + تكساس + خس + مايونيز.",
+    descEn:
+      "Fino bread, fried chicken roll stuffed with special cheeses, bacon, smoked turkey, cheddar sauce, ranch sauce, Texas sauce, lettuce, and mayonnaise.",
+    price: 165,
     image: chickenImg,
     available: true,
     popular: true,
@@ -409,21 +353,65 @@ export const products: Product[] = [
     categoryId: "chicken",
     nameAr: "نيو تشيكن",
     nameEn: "New Chicken",
-    descAr: "عيش فينو + فراخ كرانشي + طماطم + بصل أحمر + موزاريلا + كريمة.",
-    descEn: "Fino bread, crunchy chicken, tomato, red onion, mozzarella, cream.",
-    price: 170,
+    descAr: "عيش فينو + قطع دجاج جريلد + طماطم + بصل مشوي + جبنة موزاريلا + كريمة.",
+    descEn:
+      "Fino bread, grilled chicken pieces, tomatoes, grilled onions, mozzarella cheese, and cream.",
+    price: 160,
     image: chickenImg,
     available: true,
+  },
+  {
+    id: "chk-classic",
+    categoryId: "chicken",
+    nameAr: "كلاسيك تشيكن برجر",
+    nameEn: "Classic Chicken Burger",
+    descAr: "عيش كايزر + برجر دجاج جريلد + مايونيز + صوص شيدر + صوص تكساس + خس.",
+    descEn:
+      "Kaiser bun, grilled chicken burger patty, mayonnaise, cheddar sauce, Texas sauce, and lettuce.",
+    price: 140,
+    image: chickenImg,
+    available: true,
+    popular: true,
+    optionGroups: [sauceExtras],
+  },
+  {
+    id: "chk-mexican-burger",
+    categoryId: "chicken",
+    nameAr: "مكسيكان تشيكن برجر",
+    nameEn: "Mexican Chicken Burger",
+    descAr:
+      "عيش كايزر + برجر دجاج جريلد + مايونيز + خيار مخلل + بصل مكرمل + هاليبينو + صوص شيدر + جبنة موزاريلا.",
+    descEn:
+      "Kaiser bun, grilled chicken burger patty, mayonnaise, pickles, caramelized onions, jalapeños, cheddar sauce, and mozzarella cheese.",
+    price: 150,
+    image: chickenImg,
+    available: true,
+    optionGroups: [sauceExtras],
+  },
+  {
+    id: "chk-ranch",
+    categoryId: "chicken",
+    nameAr: "تشيكن رانش",
+    nameEn: "Chicken Ranch",
+    descAr:
+      "عيش كايزر + قطعتين صدور دجاج مقلي + صوص شيدر + رومي مدخن + رانش + خس + مايونيز.",
+    descEn:
+      "Kaiser bun, 2 fried chicken breast pieces, cheddar sauce, smoked turkey, ranch sauce, lettuce, and mayonnaise.",
+    price: 160,
+    image: chickenImg,
+    available: true,
+    popular: true,
+    optionGroups: [sauceExtras],
   },
 
   // ─── APPETIZERS ────────────────────────────────────────────────
   {
-    id: "app-texas-fries-chk",
+    id: "app-new-fries-chicken",
     categoryId: "appetizers",
-    nameAr: "تكساس فرايز تشيكن",
-    nameEn: "Texas Fries Chicken",
-    descAr: "بطاطس تكساس مع تشيكن.",
-    descEn: "Texas-style fries with chicken.",
+    nameAr: "نيو فرايز تشيكن",
+    nameEn: "New Fries Chicken",
+    descAr: "بطاطس + قطع تشيكن + جبنة + كريمة + طماطم + بصل + هالبينو + صوص تكساس.",
+    descEn: "Fries, chicken pieces, cheese, cream, tomato, onion, jalapeño, and Texas sauce.",
     price: 155,
     image: friesImg,
     available: true,
@@ -432,10 +420,10 @@ export const products: Product[] = [
   {
     id: "app-crunchy-start",
     categoryId: "appetizers",
-    nameAr: "كرانشي ستارت",
+    nameAr: "كرانشي استارت",
     nameEn: "Crunchy Start",
-    descAr: "تشكيلة مقبلات كرانشي.",
-    descEn: "Crunchy starter mix.",
+    descAr: "٣ قطع تشيكن فينجرز + رانش + كول سلو + هاني مسترد.",
+    descEn: "3 chicken fingers, ranch, coleslaw, and honey mustard.",
     price: 150,
     image: chickenImg,
     available: true,
@@ -445,8 +433,8 @@ export const products: Product[] = [
     categoryId: "appetizers",
     nameAr: "موتزاريلا ستيكس",
     nameEn: "Mozzarella Sticks",
-    descAr: "أصابع موتزاريلا مقلية.",
-    descEn: "Fried mozzarella sticks.",
+    descAr: "٣ قطع مع سويت شيلي.",
+    descEn: "3 sticks with sweet chili.",
     price: 55,
     image: friesImg,
     available: true,
@@ -454,10 +442,10 @@ export const products: Product[] = [
   {
     id: "app-onion-rings",
     categoryId: "appetizers",
-    nameAr: "أونيون رينجز",
+    nameAr: "اونيون رينجز",
     nameEn: "Onion Rings",
-    descAr: "حلقات بصل مقلية.",
-    descEn: "Fried onion rings.",
+    descAr: "٦ قطع مع سويت شيلي.",
+    descEn: "6 pieces with sweet chili.",
     price: 55,
     image: friesImg,
     available: true,
@@ -467,8 +455,8 @@ export const products: Product[] = [
     categoryId: "appetizers",
     nameAr: "بطاطس عمرانكو",
     nameEn: "Omranco Fries",
-    descAr: "بطاطس عمرانكو الخاصة.",
-    descEn: "Omranco special fries.",
+    descAr: "بطاطس كبيرة + جبنة + لحم قلب + مخلل حار.",
+    descEn: "Large fries, cheese, heart meat, and chili pickles.",
     price: 90,
     image: friesImg,
     available: true,
@@ -479,8 +467,8 @@ export const products: Product[] = [
     categoryId: "appetizers",
     nameAr: "تكساس بيف",
     nameEn: "Texas Beef",
-    descAr: "تكساس بيف.",
-    descEn: "Texas beef.",
+    descAr: "بطاطس + بيف حار + صوص تكساس + هالبينو + طماطم + بصل + كريمة (عادي / حار).",
+    descEn: "Fries, chili beef, Texas sauce, jalapeño, tomato, onion, and cream (regular / hot).",
     price: 155,
     image: burgerImg,
     available: true,
@@ -490,8 +478,8 @@ export const products: Product[] = [
     categoryId: "appetizers",
     nameAr: "تكساس تشيكن",
     nameEn: "Texas Chicken",
-    descAr: "تكساس تشيكن.",
-    descEn: "Texas chicken.",
+    descAr: "بطاطس + تشيكن + صوص تكساس + رانش + هالبينو.",
+    descEn: "Fries, chicken, Texas sauce, ranch, and jalapeño.",
     price: 155,
     image: chickenImg,
     available: true,
@@ -499,10 +487,10 @@ export const products: Product[] = [
   {
     id: "app-texas-smoked",
     categoryId: "appetizers",
-    nameAr: "تكساس سموكد",
+    nameAr: "تكساس سمووكد",
     nameEn: "Texas Smoked",
-    descAr: "تكساس سموكد.",
-    descEn: "Texas smoked.",
+    descAr: "بطاطس + لحوم مدخنة + صوص تكساس + باربيكيو + بصل مدخن + طماطم + هالبينو.",
+    descEn: "Fries, smoked meat, Texas sauce, BBQ, smoked onion, tomato, and jalapeño.",
     price: 155,
     image: sandwichImg,
     available: true,
@@ -512,8 +500,8 @@ export const products: Product[] = [
     categoryId: "appetizers",
     nameAr: "تكساس هوت دوج",
     nameEn: "Texas Hot Dog",
-    descAr: "تكساس هوت دوج.",
-    descEn: "Texas hot dog.",
+    descAr: "بطاطس + هوت دوج + بصل + طماطم + صوص شيدر.",
+    descEn: "Fries, hot dog, onion, tomato, and cheddar sauce.",
     price: 125,
     image: sandwichImg,
     available: true,
@@ -547,9 +535,9 @@ export const products: Product[] = [
     id: "new-cheese-steak",
     categoryId: "new",
     nameAr: "فيليه تشيز ستيك",
-    nameEn: "Cheese Steak Fillet",
+    nameEn: "Philly Cheese Steak",
     descAr: "فيليه تشيز ستيك.",
-    descEn: "Cheese steak fillet.",
+    descEn: "Philly cheese steak.",
     price: 150,
     image: sandwichImg,
     available: true,
@@ -557,9 +545,9 @@ export const products: Product[] = [
   {
     id: "new-quesadilla",
     categoryId: "new",
-    nameAr: "كاساديا فاهيتا دجاج",
+    nameAr: "كاسديا فاهيتا دجاج",
     nameEn: "Chicken Fajita Quesadilla",
-    descAr: "كاساديا فاهيتا دجاج.",
+    descAr: "كاسديا فاهيتا دجاج.",
     descEn: "Chicken fajita quesadilla.",
     price: 140,
     image: sandwichImg,
@@ -592,10 +580,10 @@ export const products: Product[] = [
   {
     id: "mix-ya-lahooy",
     categoryId: "mix",
-    nameAr: "يا لهووي",
-    nameEn: "Ya Lahooy",
-    descAr: "مكس يا لهووي.",
-    descEn: "Ya Lahooy mix.",
+    nameAr: "بالهوووي",
+    nameEn: "Balhooooy",
+    descAr: "برجر عملاق + ٤ ستربس + رانش + جبنة + هالبينو + كول سلو + عيش + بطاطس.",
+    descEn: "Giant burger, 4 strips, ranch, cheese, jalapeño, coleslaw, bread, and fries.",
     price: 220,
     image: mealImg,
     available: true,
@@ -605,9 +593,9 @@ export const products: Product[] = [
     id: "mix-ya-hayaty",
     categoryId: "mix",
     nameAr: "يا حياتي",
-    nameEn: "Ya Hayaty",
-    descAr: "مكس يا حياتي.",
-    descEn: "Ya Hayaty mix.",
+    nameEn: "Ya Hayati",
+    descAr: "قطعتين برجر (٢٠٠ جم) + قطعة تشيكن (١٢٠ جم) + رانش + باربيكيو + خس + طماطم + بصل + بطاطس + عيش.",
+    descEn: "2 burger patties (200g), chicken piece (120g), ranch, BBQ, lettuce, tomato, onion, fries, and bread.",
     price: 195,
     image: mealImg,
     available: true,
@@ -616,9 +604,9 @@ export const products: Product[] = [
     id: "mix-sogok",
     categoryId: "mix",
     nameAr: "سجق برجر",
-    nameEn: "Sogok Burger",
+    nameEn: "Sausage Burger",
     descAr: "سجق برجر.",
-    descEn: "Sausage burger mix.",
+    descEn: "Sausage burger.",
     price: 200,
     image: burgerImg,
     available: true,
@@ -642,8 +630,8 @@ export const products: Product[] = [
     categoryId: "combo",
     nameAr: "كومبو",
     nameEn: "Combo",
-    descAr: "إضافة كومبو لطلبك.",
-    descEn: "Add a combo to your order.",
+    descAr: "بطاطس ٢٠٠ جم + مشروب.",
+    descEn: "200g fries + drink.",
     price: 45,
     image: mealImg,
     available: true,
@@ -673,10 +661,10 @@ export const products: Product[] = [
   {
     id: "combo-cola",
     categoryId: "combo",
-    nameAr: "في كولا",
-    nameEn: "V Cola",
-    descAr: "في كولا.",
-    descEn: "V Cola.",
+    nameAr: "بي ب كولا",
+    nameEn: "B Cola",
+    descAr: "بي ب كولا.",
+    descEn: "B Cola.",
     price: 25,
     image: drinkImg,
     available: true,
@@ -684,10 +672,10 @@ export const products: Product[] = [
   {
     id: "combo-maxi",
     categoryId: "combo",
-    nameAr: "ماكسي",
-    nameEn: "Maxi",
-    descAr: "ماكسي.",
-    descEn: "Maxi drink.",
+    nameAr: "ماكسي ب",
+    nameEn: "Maxi B",
+    descAr: "ماكسي ب.",
+    descEn: "Maxi B drink.",
     price: 20,
     image: drinkImg,
     available: true,
@@ -822,8 +810,8 @@ export const products: Product[] = [
     categoryId: "kids",
     nameAr: "وجبة أطفال بيف برجر",
     nameEn: "Kids Beef Burger Meal",
-    descAr: "بيف برجر أطفال + عصير.",
-    descEn: "Kids beef burger with juice.",
+    descAr: "عيش كايزر + برجر بيف فريش + خس + مايونيز + صوص شيدر + صوص تكساس + عصير.",
+    descEn: "Kaiser bun, fresh beef burger, lettuce, mayo, cheddar sauce, Texas sauce, and juice.",
     price: 100,
     image: burgerImg,
     available: true,
@@ -833,8 +821,8 @@ export const products: Product[] = [
     categoryId: "kids",
     nameAr: "وجبة أطفال فرايد تشيكن",
     nameEn: "Kids Fried Chicken Meal",
-    descAr: "فرايد تشيكن أطفال + عصير.",
-    descEn: "Kids fried chicken with juice.",
+    descAr: "عيش كايزر + صدر دجاج مقلي + خس + مايونيز + صوص شيدر + صوص تكساس + عصير.",
+    descEn: "Kaiser bun, fried chicken breast, lettuce, mayo, cheddar sauce, Texas sauce, and juice.",
     price: 100,
     image: chickenImg,
     available: true,
@@ -844,8 +832,8 @@ export const products: Product[] = [
     categoryId: "kids",
     nameAr: "وجبة أطفال تشيكن برجر",
     nameEn: "Kids Chicken Burger Meal",
-    descAr: "تشيكن برجر أطفال + عصير.",
-    descEn: "Kids chicken burger with juice.",
+    descAr: "عيش كايزر + تشيكن برجر + خس + مايونيز + صوص شيدر + صوص تكساس + عصير.",
+    descEn: "Kaiser bun, chicken burger, lettuce, mayo, cheddar sauce, Texas sauce, and juice.",
     price: 100,
     image: chickenImg,
     available: true,
@@ -858,8 +846,9 @@ export const offers: Offer[] = [
     id: "o-pasta",
     titleAr: "باستا برجر",
     titleEn: "Pasta Burger",
-    descAr: "من قسم الجديد في منيو عمرانكو — ١٥٠ جنيه.",
-    descEn: "From OMRANCO new items — 150 EGP.",
+    descAr: "من قسم الجديد في منيو عمرانكو.",
+    descEn: "From OMRANCO new items.",
+    price: 150,
     badgeAr: "جرب الجديد",
     badgeEn: "Try the new",
     image: mealImg,
@@ -868,8 +857,9 @@ export const offers: Offer[] = [
     id: "o-mix",
     titleAr: "عمرانكو مكس",
     titleEn: "Omranco Mix",
-    descAr: "مكس عمرانكو — ٢١٠ جنيه.",
-    descEn: "Omranco mix — 210 EGP.",
+    descAr: "مكس عمرانكو.",
+    descEn: "Omranco mix.",
+    price: 210,
     badgeAr: "مكس",
     badgeEn: "Mix",
     image: mealImg,
@@ -878,8 +868,9 @@ export const offers: Offer[] = [
     id: "o-kids",
     titleAr: "وجبات أطفال",
     titleEn: "Kids Meals",
-    descAr: "بيف أو فرايد تشيكن أو تشيكن برجر — ١٠٠ جنيه.",
-    descEn: "Beef, fried chicken or chicken burger — 100 EGP.",
+    descAr: "بيف أو فرايد تشيكن أو تشيكن برجر.",
+    descEn: "Beef, fried chicken or chicken burger.",
+    price: 100,
     badgeAr: "١٠٠ جنيه",
     badgeEn: "100 EGP",
     image: burgerImg,
@@ -905,16 +896,6 @@ export const branches: Branch[] = [
     phone: "0502242474",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=شارع+النخلة+المنصورة",
   },
-];
-
-export const DELIVERY_FEE = 25;
-
-export const deliveryZones = [
-  { id: "z1", nameAr: "حي الجامعة", nameEn: "Hay El Gamaa" },
-  { id: "z2", nameAr: "توريل", nameEn: "Toril" },
-  { id: "z3", nameAr: "المشاية", nameEn: "El Mashaya" },
-  { id: "z4", nameAr: "وسط البلد", nameEn: "Downtown Mansoura" },
-  { id: "z5", nameAr: "جيهان", nameEn: "Gehan Street" },
 ];
 
 export const getProduct = (id: string) => products.find((p) => p.id === id);

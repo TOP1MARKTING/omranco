@@ -7,7 +7,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { DELIVERY_FEE, type OptionChoice, type Product } from "@/lib/menu-data";
+import { DELIVERY_FEE } from "@/lib/menu-constants";
+import type { OptionChoice, Product } from "@/lib/menu-types";
 
 export type Fulfillment = "delivery" | "pickup";
 
@@ -51,18 +52,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setOpen] = useState(false);
   const [fulfillment, setFulfillment] = useState<Fulfillment>("delivery");
 
+  // Cart lives only for this page load. A refresh starts empty.
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setLines(JSON.parse(raw) as CartLine[]);
+      localStorage.removeItem(STORAGE_KEY);
     } catch {
-      /* ignore corrupt storage */
+      /* ignore */
     }
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
-  }, [lines]);
 
   const add = useCallback<CartCtx["add"]>((product, quantity, options) => {
     const signature = options

@@ -3,17 +3,46 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
 
+/** Full-quality source — desktop / large screens */
 const HERO_VIDEO = "/hero-mix.mp4";
+/** Lighter encode — phones */
+const HERO_VIDEO_MOBILE = "/hero-mix-mobile.mp4";
+/** Immediate LCP paint — shown under the video until playback starts */
+const HERO_POSTER = "/hero-poster.jpg";
+const POSTER_W = 960;
+const POSTER_H = 1706;
 
 function readViewportHeight() {
   if (typeof window === "undefined") return undefined;
   return Math.round(window.innerHeight);
 }
 
+function pickHeroVideoSrc() {
+  if (typeof window === "undefined") return HERO_VIDEO;
+  return window.matchMedia("(max-width: 768px)").matches ? HERO_VIDEO_MOBILE : HERO_VIDEO;
+}
+
+function scheduleWhenIdle(fn: () => void, timeoutMs = 1800) {
+  const w = window as Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+    cancelIdleCallback?: (id: number) => void;
+  };
+
+  if (typeof w.requestIdleCallback === "function") {
+    const id = w.requestIdleCallback(fn, { timeout: timeoutMs });
+    return () => w.cancelIdleCallback?.(id);
+  }
+
+  const id = window.setTimeout(fn, Math.min(400, timeoutMs));
+  return () => window.clearTimeout(id);
+}
+
 export function HeroSection() {
   const { t } = useLang();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [heroHeight, setHeroHeight] = useState<number | undefined>(undefined);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   useEffect(() => {
     const updateHeight = () => setHeroHeight(readViewportHeight());
@@ -28,35 +57,90 @@ export function HeroSection() {
     };
   }, []);
 
+  // Defer attaching the video source until after first paint / idle — poster paints first.
+  useEffect(() => {
+    let cancelled = false;
+    let cancelIdle: (() => void) | undefined;
+
+    const arm = () => {
+      cancelIdle = scheduleWhenIdle(() => {
+        if (!cancelled) setVideoSrc(pickHeroVideoSrc());
+      });
+    };
+
+    if (document.readyState === "complete") {
+      arm();
+    } else {
+      window.addEventListener("load", arm, { once: true });
+    }
+
+    return () => {
+      cancelled = true;
+      cancelIdle?.();
+      window.removeEventListener("load", arm);
+    };
+  }, []);
+
   useEffect(() => {
     const v = videoRef.current;
-    if (!v) return;
+    if (!v || !videoSrc) return;
 
     v.muted = true;
     v.defaultMuted = true;
     v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+
+    let cancelled = false;
 
     const tryPlay = () => {
-      void v.play().catch(() => {
-        window.setTimeout(() => void v.play().catch(() => {}), 300);
-      });
+      if (cancelled) return;
+      void v.play().then(
+        () => {
+          if (!cancelled) setVideoPlaying(true);
+        },
+        () => {
+          /* Autoplay can fail — poster stays visible */
+        },
+      );
     };
 
+    const pause = () => {
+      v.pause();
+    };
+
+    const onCanPlay = () => tryPlay();
+    v.addEventListener("canplay", onCanPlay);
+    v.addEventListener("loadeddata", onCanPlay);
+
+    // Explicit load after src is set via React
+    v.load();
     tryPlay();
-    v.addEventListener("loadeddata", tryPlay);
-    v.addEventListener("canplay", tryPlay);
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) tryPlay();
+        else pause();
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(v);
 
     const onVisibility = () => {
       if (document.visibilityState === "visible") tryPlay();
+      else pause();
     };
     document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
-      v.removeEventListener("loadeddata", tryPlay);
-      v.removeEventListener("canplay", tryPlay);
+      cancelled = true;
+      io.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
+      v.removeEventListener("canplay", onCanPlay);
+      v.removeEventListener("loadeddata", onCanPlay);
+      pause();
     };
-  }, []);
+  }, [videoSrc]);
 
   return (
     <section
@@ -67,22 +151,39 @@ export function HeroSection() {
       }}
     >
       <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
+        {/* Instant LCP candidate — fixed box via absolute fill (no CLS) */}
+        <img
+          src={HERO_POSTER}
+          alt=""
+          width={POSTER_W}
+          height={POSTER_H}
+          fetchPriority="high"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
-          src={HERO_VIDEO}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
         />
+
+        {videoSrc ? (
+          <video
+            ref={videoRef}
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ opacity: videoPlaying ? 1 : 0 }}
+            src={videoSrc}
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="none"
+            poster={HERO_POSTER}
+            aria-hidden={videoPlaying ? undefined : true}
+          />
+        ) : null}
+
         <div className="absolute inset-0 bg-ink/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
       </div>
 
       <div className="brand-container relative z-10 flex h-full w-full flex-col items-center justify-end pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[calc(4.5rem+env(safe-area-inset-top))] text-center sm:pb-16 lg:pb-20">
-        <h1 className="omranco-display max-w-3xl text-primary drop-shadow-sm">
+        <h1 className="omranco-display max-w-3xl whitespace-pre-line text-primary drop-shadow-sm">
           {t("heroTitle")}
         </h1>
 

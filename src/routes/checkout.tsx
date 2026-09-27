@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
-import { branches, deliveryZones } from "@/lib/menu-data";
+import { deliveryZones } from "@/lib/menu-constants";
+import { branches } from "@/lib/menu-data";
 import { createOrderId, saveLastOrder } from "@/lib/order";
 import { cn } from "@/lib/utils";
 

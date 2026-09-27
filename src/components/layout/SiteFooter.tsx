@@ -84,13 +84,13 @@ export function SiteFooter() {
       </div>
       <div className="border-t-2 border-white/15 py-4 text-center text-xs text-white/45">
         <p>© {new Date().getFullYear()} OMRANCO BURGER</p>
-        <p className="mt-2">
-          {pick("الموقع من تنفيذ", "Website by")}{" "}
+        <p className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          <span>{pick("الموقع من تنفيذ", "Website by")}</span>
           <a
             href="https://www.top1markting.com/"
             target="_blank"
             rel="noreferrer"
-            className="font-bold text-primary-bright transition-colors hover:text-white"
+            className="inline-flex h-9 items-center border-2 border-black bg-primary px-3 text-xs font-extrabold text-white hard-shadow transition hover:bg-primary/90 active:translate-x-px active:translate-y-px active:shadow-none"
           >
             Top1Markting
           </a>
