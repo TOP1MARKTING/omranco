@@ -22,21 +22,6 @@ function pickHeroVideoSrc() {
   return window.matchMedia("(max-width: 768px)").matches ? HERO_VIDEO_MOBILE : HERO_VIDEO;
 }
 
-function scheduleWhenIdle(fn: () => void, timeoutMs = 1800) {
-  const w = window as Window & {
-    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-    cancelIdleCallback?: (id: number) => void;
-  };
-
-  if (typeof w.requestIdleCallback === "function") {
-    const id = w.requestIdleCallback(fn, { timeout: timeoutMs });
-    return () => w.cancelIdleCallback?.(id);
-  }
-
-  const id = window.setTimeout(fn, Math.min(400, timeoutMs));
-  return () => window.clearTimeout(id);
-}
-
 export function HeroSection() {
   const { t } = useLang();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -57,67 +42,69 @@ export function HeroSection() {
     };
   }, []);
 
-  // Defer attaching the video source until after first paint / idle — poster paints first.
+  // Poster paints first (SSR); the video starts loading right after hydration.
   useEffect(() => {
-    let cancelled = false;
-    let cancelIdle: (() => void) | undefined;
-
-    const arm = () => {
-      cancelIdle = scheduleWhenIdle(() => {
-        if (!cancelled) setVideoSrc(pickHeroVideoSrc());
-      });
-    };
-
-    if (document.readyState === "complete") {
-      arm();
-    } else {
-      window.addEventListener("load", arm, { once: true });
-    }
-
-    return () => {
-      cancelled = true;
-      cancelIdle?.();
-      window.removeEventListener("load", arm);
-    };
+    setVideoSrc(pickHeroVideoSrc());
   }, []);
 
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !videoSrc) return;
 
+    // iOS only autoplays when muted/playsinline are already set before the source loads.
     v.muted = true;
     v.defaultMuted = true;
+    v.setAttribute("muted", "");
     v.playsInline = true;
     v.setAttribute("playsinline", "");
     v.setAttribute("webkit-playsinline", "");
+    v.src = videoSrc;
 
     let cancelled = false;
+    let errorRetries = 0;
 
     // iOS Low Power Mode, Android Data Saver and some in-app browsers block autoplay
-    // until the user interacts with the page.
-    const gestureEvents = ["pointerdown", "touchstart", "keydown"] as const;
+    // until a user activation; touchstart/pointerdown on touch screens don't count as one.
+    const gestureEvents = ["pointerup", "touchend", "click", "keydown"] as const;
+    let gestureArmed = false;
     const removeGestureRetry = () => {
+      if (!gestureArmed) return;
+      gestureArmed = false;
       gestureEvents.forEach((e) => window.removeEventListener(e, onGesture));
     };
-    const onGesture = () => {
-      removeGestureRetry();
-      tryPlay();
+    const armGestureRetry = () => {
+      if (gestureArmed) return;
+      gestureArmed = true;
+      gestureEvents.forEach((e) => window.addEventListener(e, onGesture, { passive: true }));
     };
+    const onGesture = () => tryPlay();
 
     const tryPlay = () => {
-      if (cancelled) return;
-      void v.play().then(
+      if (cancelled || document.visibilityState !== "visible") return;
+      const p = v.play();
+      if (!p) return;
+      p.then(
         () => {
           if (!cancelled) setVideoPlaying(true);
           removeGestureRetry();
         },
         () => {
-          if (cancelled) return;
-          gestureEvents.forEach((e) =>
-            window.addEventListener(e, onGesture, { once: true, passive: true }),
-          );
+          if (!cancelled) armGestureRetry();
         },
       );
+    };
+
+    const onError = () => {
+      if (cancelled || errorRetries >= 2) return;
+      errorRetries += 1;
+      // Mobile encode failed → fall back to the main file, otherwise retry the same one.
+      const next = videoSrc === HERO_VIDEO_MOBILE ? HERO_VIDEO : videoSrc;
+      window.setTimeout(() => {
+        if (cancelled) return;
+        v.src = `${next}${errorRetries > 1 ? `?r=${errorRetries}` : ""}`;
+        v.load();
+        tryPlay();
+      }, 800 * errorRetries);
     };
 
     const pause = () => {
@@ -133,8 +120,8 @@ export function HeroSection() {
     v.addEventListener("canplay", onCanPlay);
     v.addEventListener("loadeddata", onCanPlay);
     v.addEventListener("playing", onPlaying);
+    v.addEventListener("error", onError);
 
-    // Explicit load after src is set via React
     v.load();
     tryPlay();
 
@@ -161,6 +148,7 @@ export function HeroSection() {
       v.removeEventListener("canplay", onCanPlay);
       v.removeEventListener("loadeddata", onCanPlay);
       v.removeEventListener("playing", onPlaying);
+      v.removeEventListener("error", onError);
       pause();
     };
   }, [videoSrc]);
@@ -190,12 +178,11 @@ export function HeroSection() {
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
             style={{ opacity: videoPlaying ? 1 : 0 }}
-            src={videoSrc}
             muted
             loop
             playsInline
             autoPlay
-            preload="none"
+            preload="auto"
             poster={HERO_POSTER}
             aria-hidden={videoPlaying ? undefined : true}
           />
