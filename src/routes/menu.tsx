@@ -93,7 +93,7 @@ function MenuPage() {
   return (
     <div className="red-grid min-h-[70vh] py-8 sm:py-10">
       <div className="brand-container">
-        <div className="mb-5 border-2 border-black bg-white p-4 hard-shadow sm:p-5">
+        <div className="mb-5 border-2 border-black bg-white p-4 hard-shadow sm:p-5 text-center">
           <p className="font-brand text-xs tracking-[0.18em] text-ink/45">MENU.EXE</p>
           <h1 className="omranco-display mt-1 text-primary !text-[clamp(1.75rem,4vw,2.75rem)]">
             {t("menu")}
@@ -116,7 +116,7 @@ function MenuPage() {
             />
           </div>
 
-          <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar sm:-mx-5 sm:px-5">
+          <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar sm:-mx-5 sm:px-5 md:flex-wrap md:justify-center">
             <button
               type="button"
               onClick={() => setCategory(undefined)}

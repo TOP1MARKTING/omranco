@@ -24,7 +24,7 @@ const dict = {
   orderNow: { ar: "اطلب الآن", en: "Order now" },
   viewMenu: { ar: "شوف المنيو", en: "View menu" },
   cart: { ar: "السلة", en: "Cart" },
-  heroTitle: { ar: "جاهز تجرب\nعروض عمرانكو؟", en: "Ready to try\nOMRANCO offers?" },
+  heroTitle: { ar: "جاهز تجرب\nعروض عمرانكو يا\u00A0عمرييي؟", en: "Ready to try\nOMRANCO offers?" },
   heroSub: {
     ar: "اختار أكلك واطلبه دلوقتي",
     en: "Pick your food and order now",
@@ -75,13 +75,17 @@ const dict = {
   addMoreFood: { ar: "زود أكل يا عمري", en: "Add more food" },
   continueShopping: { ar: "كمّل تسوق", en: "Continue shopping" },
   orderSuccessTitle: { ar: "طلبك وصل لعمرانكو ❤️", en: "Your order reached OMRANCO ❤️" },
-  orderSuccessSub: { ar: "هنبدأ تجهيز طلبك دلوقتي.", en: "We'll start preparing your order now." },
+  orderSuccessSub: {
+    ar: "اتأكد إنك دوست «إرسال» في الواتساب، والفرع هيكلمك على رقمك يأكد معاك.",
+    en: "Make sure you hit send in WhatsApp. The branch will call you to confirm.",
+  },
   orderNumber: { ar: "رقم الطلب", en: "Order number" },
-  statusReceived: { ar: "تم استلام الطلب", en: "Order received" },
-  statusPreparing: { ar: "جاري التحضير", en: "Preparing" },
-  statusReady: { ar: "جاهز", en: "Ready" },
-  statusOnTheWay: { ar: "في الطريق", en: "On the way" },
-  statusDelivered: { ar: "تم التوصيل", en: "Delivered" },
+  sendOnWhatsapp: { ar: "ابعت الطلب على واتساب", en: "Send order on WhatsApp" },
+  openWhatsappAgain: { ar: "الواتساب ما فتحش؟ افتحه تاني", en: "WhatsApp didn't open? Open it again" },
+  whatsappOrderHint: {
+    ar: "الواتساب هيفتح والطلب مكتوب جاهز — دوس إرسال بس.",
+    en: "WhatsApp opens with your order written — just hit send.",
+  },
   backHome: { ar: "الرجوع للرئيسية", en: "Back home" },
   aboutTitle: { ar: "عمرانكو برجر", en: "OMRANCO BURGER" },
   aboutBody: {

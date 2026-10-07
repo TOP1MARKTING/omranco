@@ -65,5 +65,7 @@ export interface Branch {
   addressAr: string;
   addressEn: string;
   phone: string;
+  /** International format without "+" (e.g. 2015…). Pickup orders for this branch go here. */
+  whatsapp?: string;
   mapUrl: string;
 }

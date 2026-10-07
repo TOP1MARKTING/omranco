@@ -93,14 +93,29 @@ export function HeroSection() {
 
     let cancelled = false;
 
+    // iOS Low Power Mode, Android Data Saver and some in-app browsers block autoplay
+    // until the user interacts with the page.
+    const gestureEvents = ["pointerdown", "touchstart", "keydown"] as const;
+    const removeGestureRetry = () => {
+      gestureEvents.forEach((e) => window.removeEventListener(e, onGesture));
+    };
+    const onGesture = () => {
+      removeGestureRetry();
+      tryPlay();
+    };
+
     const tryPlay = () => {
       if (cancelled) return;
       void v.play().then(
         () => {
           if (!cancelled) setVideoPlaying(true);
+          removeGestureRetry();
         },
         () => {
-          /* Autoplay can fail — poster stays visible */
+          if (cancelled) return;
+          gestureEvents.forEach((e) =>
+            window.addEventListener(e, onGesture, { once: true, passive: true }),
+          );
         },
       );
     };
@@ -110,8 +125,14 @@ export function HeroSection() {
     };
 
     const onCanPlay = () => tryPlay();
+    const onPlaying = () => {
+      if (cancelled) return;
+      setVideoPlaying(true);
+      removeGestureRetry();
+    };
     v.addEventListener("canplay", onCanPlay);
     v.addEventListener("loadeddata", onCanPlay);
+    v.addEventListener("playing", onPlaying);
 
     // Explicit load after src is set via React
     v.load();
@@ -134,10 +155,12 @@ export function HeroSection() {
 
     return () => {
       cancelled = true;
+      removeGestureRetry();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       v.removeEventListener("canplay", onCanPlay);
       v.removeEventListener("loadeddata", onCanPlay);
+      v.removeEventListener("playing", onPlaying);
       pause();
     };
   }, [videoSrc]);

@@ -10,7 +10,7 @@ import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
 import { deliveryZones } from "@/lib/menu-constants";
 import { branches } from "@/lib/menu-data";
-import { createOrderId, saveLastOrder } from "@/lib/order";
+import { buildOrderMessage, createOrderId, orderWhatsAppUrl, saveLastOrder } from "@/lib/order";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/checkout")({
@@ -24,8 +24,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 function CheckoutPage() {
-  const { lines, subtotal, deliveryFee, discount, total, fulfillment, setFulfillment, clear } =
-    useCart();
+  const { lines, subtotal, deliveryFee, total, fulfillment, setFulfillment, clear } = useCart();
   const { t, pick, lang } = useLang();
   const navigate = useNavigate();
 
@@ -37,8 +36,6 @@ function CheckoutPage() {
   const [driverNotes, setDriverNotes] = useState("");
   const [branchId, setBranchId] = useState(branches[0]?.id ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
-
   const isDelivery = fulfillment === "delivery";
 
   const canSubmit = useMemo(() => lines.length > 0, [lines.length]);
@@ -78,29 +75,34 @@ function CheckoutPage() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setSubmitting(true);
 
-    const order = {
-      id: createOrderId(),
-      createdAt: new Date().toISOString(),
+    const details = {
       customerName: name.trim(),
       phone: phone.trim(),
       fulfillment,
-      branchId: isDelivery ? undefined : branchId,
-      area: isDelivery ? area : undefined,
+      branch: isDelivery ? undefined : branches.find((b) => b.id === branchId),
+      areaId: isDelivery ? area : undefined,
       address: isDelivery ? address.trim() : undefined,
       landmark: isDelivery ? landmark.trim() : undefined,
-      driverNotes: isDelivery ? driverNotes.trim() : undefined,
-      payment: "cod" as const,
+      notes: isDelivery ? driverNotes.trim() : undefined,
       lines,
       subtotal,
       deliveryFee,
-      discount,
       total,
-      status: "received" as const,
     };
+    const id = createOrderId();
+    const whatsappUrl = orderWhatsAppUrl(details, buildOrderMessage(details, id));
 
-    saveLastOrder(order);
+    // Must open synchronously inside the submit gesture or mobile browsers block it.
+    window.open(whatsappUrl, "_blank", "noopener");
+
+    saveLastOrder({
+      id,
+      total,
+      fulfillment,
+      branchId: isDelivery ? undefined : branchId,
+      whatsappUrl,
+    });
     clear();
     navigate({ to: "/order-success" });
   };
@@ -111,7 +113,7 @@ function CheckoutPage() {
   return (
     <div className="red-grid min-h-[70vh] py-8 sm:py-10">
       <div className="brand-container">
-        <div className="mb-6 border-2 border-black bg-white p-4 hard-shadow sm:p-5">
+        <div className="mb-6 border-2 border-black bg-white p-4 hard-shadow sm:p-5 text-center">
           <p className="font-brand text-xs tracking-[0.18em] text-ink/45">CHECKOUT.EXE</p>
           <h1 className="omranco-display mt-1 text-primary !text-[clamp(1.75rem,4vw,2.75rem)]">
             {t("checkoutTitle")}
@@ -281,12 +283,13 @@ function CheckoutPage() {
               </div>
               <CartSummary />
             </div>
-            <Button type="submit" variant="hero" size="xl" className="w-full" disabled={submitting}>
-              {t("confirmOrder")} —{" "}
+            <Button type="submit" variant="hero" size="xl" className="w-full">
+              {t("sendOnWhatsapp")} —{" "}
               {lang === "ar"
                 ? `${total.toLocaleString("ar-EG")} جنيه`
                 : `${total.toLocaleString("en-US")} EGP`}
             </Button>
+            <p className="text-center text-xs font-bold text-white/85">{t("whatsappOrderHint")}</p>
           </aside>
         </form>
       </div>

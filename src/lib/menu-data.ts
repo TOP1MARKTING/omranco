@@ -885,6 +885,7 @@ export const branches: Branch[] = [
     addressAr: "حي الجامعة، بجوار وكالة أبو راية، المنصورة",
     addressEn: "Hay El Gamaa, next to Abu Raya agency, Mansoura",
     phone: "01555218182",
+    whatsapp: "201555218182",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=حي+الجامعة+المنصورة",
   },
   {

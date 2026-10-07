@@ -23,12 +23,12 @@ function ContactPage() {
   return (
     <div className="red-grid min-h-[70vh] py-8 sm:py-10">
       <div className="brand-container">
-        <div className="mb-6 border-2 border-black bg-white p-4 hard-shadow sm:p-5">
+        <div className="mb-6 border-2 border-black bg-white p-4 hard-shadow sm:p-5 text-center">
           <p className="font-brand text-xs tracking-[0.18em] text-ink/45">CONTACT.EXE</p>
           <h1 className="omranco-display mt-1 text-primary !text-[clamp(1.75rem,4vw,2.75rem)]">
             {t("contactTitle")}
           </h1>
-          <p className="mt-3 max-w-lg text-sm font-bold text-ink/70 sm:text-base">
+          <p className="mt-3 max-w-lg text-sm font-bold text-ink/70 sm:text-base mx-auto">
             {t("contactBody")}
           </p>
         </div>
@@ -41,7 +41,7 @@ function ContactPage() {
             <a
               key={p.tel}
               href={`tel:${p.tel}`}
-              className="flex items-center gap-3 border-2 border-black bg-white p-5 hard-shadow transition hover:-translate-x-0.5 hover:-translate-y-0.5"
+              className="flex items-center gap-3 border-2 border-black bg-white p-5 hard-shadow transition hover:-translate-x-0.5 hover:-translate-y-0.5 md:justify-center"
             >
               <span className="grid size-12 place-items-center border-2 border-black bg-primary text-white hard-shadow-sm">
                 <Phone className="size-5" />
@@ -56,14 +56,14 @@ function ContactPage() {
           ))}
         </div>
 
-        <h2 className="omranco-display mt-10 mb-4 text-white !text-[clamp(1.35rem,3vw,1.85rem)]">
+        <h2 className="omranco-display mt-10 mb-4 text-white !text-[clamp(1.35rem,3vw,1.85rem)] text-center">
           {t("branches")}
         </h2>
         <div className="grid gap-4 md:grid-cols-2">
           {branches.map((b) => (
-            <article key={b.id} className="border-2 border-black bg-white p-5 hard-shadow">
+            <article key={b.id} className="border-2 border-black bg-white p-5 hard-shadow text-center">
               <h3 className="font-extrabold">{pick(b.nameAr, b.nameEn)}</h3>
-              <p className="mt-2 flex gap-2 text-sm text-muted-foreground">
+              <p className="mt-2 flex gap-2 text-sm text-muted-foreground justify-center">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
                 {pick(b.addressAr, b.addressEn)}
               </p>
@@ -71,7 +71,7 @@ function ContactPage() {
           ))}
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap gap-3 justify-center">
           <Button asChild variant="hero">
             <Link to="/menu">{t("orderNow")}</Link>
           </Button>

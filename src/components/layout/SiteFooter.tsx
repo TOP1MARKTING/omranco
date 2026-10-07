@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Phone } from "lucide-react";
+import { ExternalLink, Instagram, Phone } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { useLang } from "@/lib/i18n";
 
@@ -84,17 +84,28 @@ export function SiteFooter() {
       </div>
       <div className="border-t-2 border-white/15 py-4 text-center text-xs text-white/45">
         <p>© {new Date().getFullYear()} OMRANCO BURGER</p>
-        <p className="mt-3 flex flex-wrap items-center justify-center gap-2">
-          <span>{pick("الموقع من تنفيذ", "Website by")}</span>
-          <a
-            href="https://www.top1markting.com/"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-9 items-center border-2 border-black bg-primary px-3 text-xs font-extrabold text-white hard-shadow transition hover:bg-primary/90 active:translate-x-px active:translate-y-px active:shadow-none"
-          >
-            Top1Markting
-          </a>
-        </p>
+        <a
+          href="https://www.top1markting.com/"
+          target="_blank"
+          rel="noreferrer"
+          aria-label={pick("الموقع من تنفيذ Top1Markting", "Website by Top1Markting")}
+          className="mt-3 inline-flex items-center gap-2 rounded-full border-2 border-black bg-white py-1 ps-2 pe-3 shadow-[3px_3px_0_var(--color-primary)] transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--color-primary)] active:translate-x-px active:translate-y-px active:shadow-none"
+        >
+          <img
+            src="/top1markting-mark.png"
+            alt=""
+            width={132}
+            height={96}
+            loading="lazy"
+            decoding="async"
+            className="h-5 w-auto"
+          />
+          <span className="text-[11px] font-bold text-ink/50">{pick("تنفيذ", "By")}</span>
+          <span dir="ltr" className="font-latin-ui text-[13px] font-extrabold tracking-tight text-ink">
+            Top<span className="text-primary">1</span>Markting
+          </span>
+          <ExternalLink className="size-3 text-ink/45" aria-hidden />
+        </a>
       </div>
     </footer>
   );

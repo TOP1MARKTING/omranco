@@ -4,6 +4,9 @@ export const CURRENCY = { ar: "جنيه", en: "EGP" };
 
 export const DELIVERY_FEE = 25;
 
+/** Receives delivery orders, and pickup orders for branches without their own WhatsApp. */
+export const ORDER_WHATSAPP = "201555218182";
+
 export const deliveryZones = [
   { id: "z1", nameAr: "حي الجامعة", nameEn: "Hay El Gamaa" },
   { id: "z2", nameAr: "توريل", nameEn: "Toril" },

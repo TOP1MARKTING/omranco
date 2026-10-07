@@ -3,8 +3,8 @@ import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/i18n";
-import { loadLastOrder, type OrderStatus } from "@/lib/order";
-import { cn } from "@/lib/utils";
+import { branches } from "@/lib/menu-data";
+import { loadLastOrder, type LastOrder } from "@/lib/order";
 
 export const Route = createFileRoute("/order-success")({
   head: () => ({
@@ -16,42 +16,15 @@ export const Route = createFileRoute("/order-success")({
   component: OrderSuccessPage,
 });
 
-const STEPS: {
-  id: OrderStatus;
-  key:
-    | "statusReceived"
-    | "statusPreparing"
-    | "statusReady"
-    | "statusOnTheWay"
-    | "statusDelivered";
-}[] = [
-  { id: "received", key: "statusReceived" },
-  { id: "preparing", key: "statusPreparing" },
-  { id: "ready", key: "statusReady" },
-  { id: "on_the_way", key: "statusOnTheWay" },
-  { id: "delivered", key: "statusDelivered" },
-];
-
 function OrderSuccessPage() {
-  const { t, money } = useLang();
-  const [orderId, setOrderId] = useState<string | null>(null);
-  const [total, setTotal] = useState<number | null>(null);
-  const [statusIndex, setStatusIndex] = useState(0);
+  const { t, money, pick } = useLang();
+  const [order, setOrder] = useState<LastOrder | null>(null);
 
   useEffect(() => {
-    const order = loadLastOrder();
-    if (order) {
-      setOrderId(order.id);
-      setTotal(order.total);
-    }
+    setOrder(loadLastOrder());
   }, []);
 
-  useEffect(() => {
-    const timers = [1, 2, 3].map((i) =>
-      window.setTimeout(() => setStatusIndex(i), i * 3500),
-    );
-    return () => timers.forEach(clearTimeout);
-  }, []);
+  const branch = order?.branchId ? branches.find((b) => b.id === order.branchId) : undefined;
 
   return (
     <div className="red-grid min-h-[70vh] py-10 sm:py-14">
@@ -65,48 +38,23 @@ function OrderSuccessPage() {
             {t("orderSuccessTitle")}
           </h1>
           <p className="mt-3 text-muted-foreground">{t("orderSuccessSub")}</p>
-          {orderId && (
-            <p className="mt-4 inline-block border-2 border-black bg-amber px-4 py-2 text-sm font-extrabold">
-              {t("orderNumber")} #{orderId}
-              {total != null && <> · {money(total)}</>}
+          {order && (
+            <p className="mt-5 inline-block border-2 border-black bg-amber px-4 py-2 text-sm font-extrabold">
+              {t("orderNumber")} <span dir="ltr">#{order.id}</span> — {money(order.total)}
             </p>
           )}
-
-          <ol className="mt-8 space-y-0 text-start">
-            {STEPS.map((step, i) => {
-              const done = i <= statusIndex;
-              const current = i === statusIndex;
-              return (
-                <li key={step.id} className="relative flex gap-4 pb-6 last:pb-0">
-                  {i < STEPS.length - 1 && (
-                    <span
-                      className={cn(
-                        "absolute start-[15px] top-8 h-[calc(100%-1.5rem)] w-0.5",
-                        i < statusIndex ? "bg-primary" : "bg-border",
-                      )}
-                    />
-                  )}
-                  <span
-                    className={cn(
-                      "relative z-10 grid size-8 shrink-0 place-items-center border-2 border-black text-xs font-extrabold",
-                      done ? "bg-primary text-white" : "bg-white text-muted-foreground",
-                      current && "hard-shadow-sm",
-                    )}
-                  >
-                    {done ? <Check className="size-4" strokeWidth={3} /> : i + 1}
-                  </span>
-                  <span
-                    className={cn(
-                      "pt-1 font-bold",
-                      done ? "text-foreground" : "text-muted-foreground",
-                    )}
-                  >
-                    {t(step.key)}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
+          {branch && (
+            <p className="mt-3 text-sm font-bold text-ink/70">
+              {pick(branch.nameAr, branch.nameEn)}
+            </p>
+          )}
+          {order?.whatsappUrl && (
+            <Button asChild variant="outline" className="mt-5 w-full bg-white">
+              <a href={order.whatsappUrl} target="_blank" rel="noreferrer">
+                {t("openWhatsappAgain")}
+              </a>
+            </Button>
+          )}
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild variant="hero">
